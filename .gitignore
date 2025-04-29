@@ -1,0 +1,21 @@
+# Ignore Maven and Gradle build output
+target
+build
+
+# Ignore JAR and WAR files
+.jar
+.war
+
+# Ignore IntelliJ, Eclipse, VSCode files
+.idea
+.iml
+.classpath
+.project
+.vscode
+
+# Logs
+.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

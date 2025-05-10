@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface SupplierRepo extends JpaRepository<Supplier, Long> {
     List<Supplier> findByBatchId(String batchId);
-    boolean existsBySupplierNameAndSupplierEmail(String supplierName, String supplierEmail);
+//    boolean existsBySupplierNameAndSupplierEmail(String supplierName, String supplierEmail);
     boolean existsByBatchId(String batchId);
 }

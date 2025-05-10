@@ -18,6 +18,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 	
+	@ExceptionHandler(DrugNotFoundException.class)
+	public ResponseEntity<String> handleDrugNotFoundException(DrugNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+	
 	@ExceptionHandler(InsufficientStockException.class)
 	public ResponseEntity<String> handleInsufficientStockException(InsufficientStockException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());

@@ -3,9 +3,7 @@ package com.example.demo.dto;
 import java.util.Date;
 
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,9 +24,7 @@ public class DrugDto {
 	private String manufacturer;
 	@Positive(message = "Price must be positive")
 	private double price;
-//	@Min(value = 1, message = "Minimum Quantity should be atleast 1")
-//    private int quantity;
-//	@NotNull(message = "Expiry date is required")
+
     @Future(message = "Expiry date must be in the future")
     private Date expiryDate;
 	

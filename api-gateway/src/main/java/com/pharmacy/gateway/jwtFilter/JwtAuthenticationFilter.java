@@ -28,9 +28,15 @@ public class JwtAuthenticationFilter implements WebFilter {
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-
+    
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    	
+    	// new code added
+    	if (exchange.getRequest().getMethod() == org.springframework.http.HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }
+    	
 
         // Retrieve authentication header from the request
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -53,8 +59,8 @@ public class JwtAuthenticationFilter implements WebFilter {
 
                     // create list of a roles for the user
                     var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
-                    System.out.println(authorities);
-
+                    log.info("{}", authorities);
+                    
                     // create authentication token using username and password
                     var authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContext securityContext = new SecurityContextImpl(authentication);

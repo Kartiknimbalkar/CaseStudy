@@ -47,7 +47,6 @@ public class DrugService {
     	drug.setName(drugDto.getName());
     	drug.setManufacturer(drugDto.getManufacturer());
     	drug.setPrice(drugDto.getPrice());
-//    	drug.setQuantity(drugDto.getQuantity());
     	drug.setExpiryDate(drugDto.getExpiryDate());
     	
     	Drug savedDrug = drugRepository.save(drug);
@@ -65,8 +64,6 @@ public class DrugService {
         drug.setName(drugDto.getName());
         drug.setManufacturer(drugDto.getManufacturer());
         drug.setPrice(drugDto.getPrice());
-//        drug.setQuantity(drugDto.getQuantity());
-//        drug.setExpiryDate(drugDto.getExpiryDate());
         if (drugDto.getExpiryDate() != null) {
             drug.setExpiryDate(drugDto.getExpiryDate());
         } else {

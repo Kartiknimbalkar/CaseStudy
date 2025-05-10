@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.OrderDto;
+import com.example.demo.exception.DrugNotFoundException;
 //import com.example.demo.dto.OrderPaymentResponse;
 import com.example.demo.exception.InsufficientStockException;
 import com.example.demo.exception.OrderNotFoundException;
@@ -26,12 +29,13 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/orders")
 @Validated
+//@CrossOrigin(origins = "http://localhost:5173")
 public class OrderController {
     @Autowired
     private OrderService orderService;
 
     @PostMapping("/place")
-    public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderDto orderDto) throws InsufficientStockException {		// place order
+    public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderDto orderDto) throws InsufficientStockException, DrugNotFoundException {		// place order
         Order order = orderService.placeOrder(orderDto);
         return ResponseEntity
                 .status(201)
@@ -57,4 +61,10 @@ public class OrderController {
     public List<Order> getAllOrders() {					// list all orders
         return orderService.getAllOrders();
     }
+    
+    @GetMapping("/get/{orderId}")
+    public Optional<Order> getOrderById(@PathVariable Long orderId) {
+    	return orderService.getOrderById(orderId);
+    }
+    
 }

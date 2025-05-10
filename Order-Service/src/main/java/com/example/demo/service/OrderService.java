@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,11 @@ import com.example.demo.dto.DrugDto;
 import com.example.demo.dto.OrderDto;
 //import com.example.demo.dto.OrderPaymentResponse;
 import com.example.demo.dto.OrderStatus;
+import com.example.demo.dto.PaymentRequest;
 //import com.example.demo.dto.PaymentRequest;
 //import com.example.demo.dto.PaymentResponse;
 import com.example.demo.dto.SalesRequest;
+import com.example.demo.exception.DrugNotFoundException;
 import com.example.demo.exception.InsufficientStockException;
 import com.example.demo.exception.OrderNotFoundException;
 import com.example.demo.model.Order;
@@ -40,11 +43,17 @@ public class OrderService {
 //	@Autowired
 //	private PaymentClient paymentClient;
 	
-	public Order placeOrder(OrderDto orderDto) throws InsufficientStockException {
+	public Order placeOrder(OrderDto orderDto) throws InsufficientStockException, DrugNotFoundException {
 		
 		log.info("In the place order method");
 		
-        DrugDto drug = drugClient.getDrugById(orderDto.getBatch_id());
+		DrugDto drug;
+		
+		try {
+			drug = drugClient.getDrugById(orderDto.getBatch_id());
+		} catch(Exception e) {
+			throw new DrugNotFoundException("Drug with batchID " + orderDto.getBatch_id() + " not found.");
+		}
 
         if (drug.getQuantity() < orderDto.getQuantity()) {
     		log.info("Not enough stock available");
@@ -70,34 +79,20 @@ public class OrderService {
         
         double totalPrice = drug.getPrice() * orderDto.getQuantity();
         order.setTotalPrice(totalPrice);
-        order.setPaidAmount(orderDto.getPaidAmount());
+        order.setPaidAmount(totalPrice);		// always full payment
         
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(Calendar.DATE, 2); 	// setting pickup date as current day + 2 days
         order.setPickupDate(cal.getTime());
         
+//        PaymentRequest paymentRequest = new PaymentRequest(order.getId(), order.getTotalPrice(), orderDto.getPaymentMethod());
+        
+//        paymentClient.makePayment(paymentRequest);
         
         
         return orderRepo.save(order);
-        
-//        PaymentRequest paymentRequest = new PaymentRequest();
-//        paymentRequest.setAmount(orderDto.getPaidAmount());
-//        paymentRequest.setOrderId(order.getId());
-//        
-//        PaymentResponse paymentResponse = paymentClient.processPayment(paymentRequest);
-//        
-//        Order savedOrder = orderRepo.save(order);
-//        
-//        log.info("Payment SUCCESS for orderId: {}", order.getId());
-//
-//        OrderPaymentResponse response  = new OrderPaymentResponse();
-//        response.setOrder(savedOrder);
-//        response.setPaymentResponse(paymentResponse);
-//        
-//		log.info("The new order got placed and saved in the database");
-//        
-//        return response;
+
     }
 	
 	public String verifyOrder(Long orderId) throws OrderNotFoundException {
@@ -161,6 +156,10 @@ public class OrderService {
 	public List<Order> getPickedUpOrders() {
 		log.info("Displaying only PICKED_UP orders form the database");
 	    return orderRepo.findByStatus(OrderStatus.PICKED_UP);
+	}
+
+	public Optional<Order> getOrderById(Long id) {
+		return orderRepo.findById(id);
 	}
 
 	

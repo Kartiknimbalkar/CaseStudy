@@ -42,7 +42,7 @@ class SupplierServiceTest {
     void testAddSupplier_success() {
         SupplierRegistrationDto dto = new SupplierRegistrationDto("Supplier A", "a@supplier.com", "BATCH001");
 
-        when(supplierRepo.existsBySupplierNameAndSupplierEmail(any(), any())).thenReturn(false);
+//        when(supplierRepo.existsBySupplierNameAndSupplierEmail(any(), any())).thenReturn(false);
         when(supplierRepo.existsByBatchId(any())).thenReturn(false);
         when(supplierRepo.save(any())).thenReturn(new Supplier());
 

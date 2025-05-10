@@ -83,7 +83,7 @@ public class SupplierController {
 	    return ResponseEntity.ok(history);
 	}
     
-    @GetMapping("/listAll")	
+    @GetMapping("/listAll")
     public List<SupplierResponseDTO> getAllHistory() {					// list all the suppliers
     	return supplierService.getAllSupplier();
     }

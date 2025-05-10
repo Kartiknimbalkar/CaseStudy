@@ -16,7 +16,7 @@ import com.example.demo.service.DrugService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:9090")
+//@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/drugs")
 @Validated

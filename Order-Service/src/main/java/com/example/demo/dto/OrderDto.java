@@ -24,7 +24,7 @@ public class OrderDto {
     private OrderStatus status;
     private Date orderDate;
     
-    @NotBlank(message = "Payment Method should not be Blank")
+//    @NotBlank(message = "Payment Method should not be Blank")
     private String paymentMethod;		// 
 
     // New fields
@@ -40,7 +40,7 @@ public class OrderDto {
 //    private List<Double> drugPrices;
 //    private double totalPrice;
     
-    @Positive(message = "Paid Amount cannot be negative")
+//    @Positive(message = "Paid Amount cannot be negative")
     private double paidAmount; // Amount actually paid
     private Date pickupDate;
 }

@@ -37,35 +37,56 @@ public class SupplierService {
 	@Autowired
 	private SupplierRestockHistoryRepo supplierRestockHistoryRepo;
 	
-	public SupplierRegistrationDto addSupplier(SupplierRegistrationDto dto) {		// add new supplier
-	    log.info("Checking if supplier already exists...");
+//	public SupplierRegistrationDto addSupplier(SupplierRegistrationDto dto) {		// add new supplier
+//	    log.info("Checking if supplier already exists...");
+//
+//	    // Check if a supplier with the same name and email exists
+//	    boolean exists = supplierRepo.existsBySupplierNameAndSupplierEmail(
+//	        dto.getSupplierName(), dto.getSupplierEmail()
+//	    );
+//
+//	    if (exists) {
+//	        throw new SupplierAlreadyExistsException("Supplier with the same name and email already exists.");
+//	    }
+//
+//	    // ensuring only one supplier per drug batchid
+//	    boolean batchIdExists = supplierRepo.existsByBatchId(dto.getBatchId());
+//	    if (batchIdExists) {
+//	        throw new SupplierAlreadyExistsException("A supplier already exists for this batch ID.");
+//	    }
+//
+//	    Supplier supplier = new Supplier();
+//	    supplier.setSupplierName(dto.getSupplierName());
+//	    supplier.setSupplierEmail(dto.getSupplierEmail());
+//	    supplier.setBatchId(dto.getBatchId());
+////	    supplier.setRestockDate(new Date());
+//
+//	    supplierRepo.save(supplier);
+//
+//	    log.info("Supplier registered: {}", dto.getSupplierName());
+//	    return dto;
+//	}
+	
+	
+	public SupplierRegistrationDto addSupplier(SupplierRegistrationDto dto) {
+	    log.info("Checking if supplier already exists for this batch...");
 
-	    // Check if a supplier with the same name and email exists
-	    boolean exists = supplierRepo.existsBySupplierNameAndSupplierEmail(
-	        dto.getSupplierName(), dto.getSupplierEmail()
-	    );
-
-	    if (exists) {
-	        throw new SupplierAlreadyExistsException("Supplier with the same name and email already exists.");
-	    }
-
-	    // ensuring only one supplier per drug batchid
 	    boolean batchIdExists = supplierRepo.existsByBatchId(dto.getBatchId());
 	    if (batchIdExists) {
-	        throw new SupplierAlreadyExistsException("A supplier already exists for this batch ID.");
+	        throw new SupplierAlreadyExistsException("A supplier is already assigned to this batch ID.");
 	    }
 
 	    Supplier supplier = new Supplier();
 	    supplier.setSupplierName(dto.getSupplierName());
 	    supplier.setSupplierEmail(dto.getSupplierEmail());
 	    supplier.setBatchId(dto.getBatchId());
-//	    supplier.setRestockDate(new Date());
 
 	    supplierRepo.save(supplier);
 
-	    log.info("Supplier registered: {}", dto.getSupplierName());
+	    log.info("Supplier '{}' assigned to batch ID: {}", dto.getSupplierName(), dto.getBatchId());
 	    return dto;
 	}
+
 
 
 

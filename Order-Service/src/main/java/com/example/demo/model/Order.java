@@ -1,9 +1,13 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
 import com.example.demo.dto.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -37,7 +41,7 @@ public class Order {
     private OrderStatus status; // PENDING, CONFIRMED, DISPATCHED, DELIVERED
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date orderDate;
+    private LocalDateTime orderDate;
     
     private String doctorName;
     private String doctorContact;
@@ -52,8 +56,7 @@ public class Order {
     private double totalPrice;
     private double paidAmount; // Amount actually paid
     
-    @Temporal(TemporalType.DATE)
-    private Date pickupDate;
+    private LocalDateTime pickupDate;
     
 }
 

@@ -1,38 +1,44 @@
 package com.pharmcy.controller;
 
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.pharmcy.model.PaymentDto;
 import com.pharmcy.service.PaymentService;
 import com.razorpay.RazorpayException;
 
 @RestController
 @RequestMapping("/payment")
-@CrossOrigin(origins = "http://localhost:5173")  // adjust for your React dev server
+@CrossOrigin(origins = "http://localhost:5173")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+    @Autowired private PaymentService service;
 
-    // 1) Initiate payment for a given order ID
-    @PostMapping("/makePayment/{orderId}")
-    public PaymentDto makePayment(@PathVariable Long orderId) throws RazorpayException {
-        return paymentService.makePayment(orderId);
+    /** 1) Client calls this first, passing total₹ and a clientOrderRef */
+    @PostMapping("/createOrder")
+    public ResponseEntity<PaymentDto> createOrder(@RequestBody Map<String,String> req)
+            throws RazorpayException {
+        return ResponseEntity.ok(service.createOrder(req));
     }
 
-    // 2) Razorpay callback to update status
+    /** 2) Razorpay success callback from the browser JS handler */
     @PostMapping("/paymentCallback")
-    public void paymentCallback(@RequestBody Map<String, String> response) {
-        paymentService.updateStatus(response);
-//        return new RedirectView("http://localhost:5173/success");
+    public ResponseEntity<Void> callback(@RequestBody Map<String,String> resp) {
+        service.confirmPayment(resp);
+        return ResponseEntity.ok().build();
+    }
+
+    /** 3) Razorpay failure or user dismiss */
+    @PostMapping("/paymentFailureCallback")
+    public ResponseEntity<Void> failure(@RequestBody Map<String,String> resp) {
+        service.failPayment(resp);
+        return ResponseEntity.ok().build();
     }
     
-    @PostMapping("/paymentFailureCallback")
-    public String failureCallback(@RequestBody Map<String, String> response) {
-    	paymentService.handleFailure(response);
-    	return "Payment Failed and items restocked";
+    @PutMapping("/update")
+    public ResponseEntity<String> updateId(@RequestBody Map<String, String> data) {
+    	return service.updateId(data);
     }
+    
 }

@@ -1,5 +1,5 @@
 package com.example.demo.dto;
 
 public enum OrderStatus {
-	PENDING, VERIFIED, PICKED_UP
+	PENDING, VERIFIED, PICKED_UP, FAILED
 }

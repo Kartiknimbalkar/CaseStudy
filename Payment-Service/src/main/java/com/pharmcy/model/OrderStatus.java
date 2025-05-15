@@ -1,5 +1,8 @@
 package com.pharmcy.model;
 
 public enum OrderStatus {
-	PENDING, VERIFIED, PICKED_UP
+    PENDING,
+    VERIFIED,
+    PICKED_UP,
+    DELIVERED
 }

@@ -38,19 +38,23 @@ public class SalesReportService {
         document.add(new Paragraph("Sales Report").setBold().setFontSize(18));
 
         // Table Headers
-        float[] columnWidths = {150f, 100f, 100f, 100f};
+        float[] columnWidths = {150f, 60f, 100f, 60f, 100f, 150f};
         Table table = new Table(columnWidths);
+        table.addCell("Doctor Name");
         table.addCell("Order ID");
         table.addCell("Batch ID");
         table.addCell("Quantity");
         table.addCell("Total Price");
+        table.addCell("Sale Date");
 
         // Add Sales Data to Table
         for (Sales sale : salesList) {
+        	table.addCell(String.valueOf(sale.getDoctorName()));
             table.addCell(String.valueOf(sale.getOrderId()));
             table.addCell(sale.getBatchId());
             table.addCell(String.valueOf(sale.getQuantity()));
             table.addCell(String.valueOf(sale.getTotalPrice()));
+            table.addCell(String.valueOf(sale.getSaleDate()));
         }
 
         document.add(table);

@@ -18,4 +18,7 @@ public interface DrugClient {
     @PutMapping("/{id}/reduce-stock")
     String reduceStock(@PathVariable String id, @RequestParam int quantity);
     
+    @PutMapping("/failureRestock/{batch_id}/{quantity}")
+    void failureRestock(@PathVariable String batch_id, @PathVariable int quantity);
+    
 }

@@ -1,7 +1,10 @@
 package com.pharmcy.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
@@ -30,7 +33,7 @@ public class OrderDto {
     private OrderStatus status; // PENDING, CONFIRMED, DISPATCHED, DELIVERED
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date orderDate;
+    private LocalDateTime orderDate;
     
     private String doctorName;
     private String doctorContact;
@@ -45,8 +48,7 @@ public class OrderDto {
     private double totalPrice;
     private double paidAmount; // Amount actually paid
     
-    @Temporal(TemporalType.DATE)
-    private Date pickupDate;
+    private LocalDateTime pickupDate;
     
     private String razorpayOrderId;
     

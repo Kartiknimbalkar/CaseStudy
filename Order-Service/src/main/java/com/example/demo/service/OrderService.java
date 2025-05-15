@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +72,7 @@ public class OrderService {
         order.setBatch_id(orderDto.getBatch_id());
         order.setQuantity(orderDto.getQuantity());
         order.setStatus(OrderStatus.PENDING);
-        order.setOrderDate(new Date());
+        order.setOrderDate(LocalDateTime.now());
         
         order.setDoctorName(orderDto.getDoctorName());
         order.setDoctorContact(orderDto.getDoctorContact());
@@ -81,10 +85,11 @@ public class OrderService {
         order.setTotalPrice(totalPrice);
         order.setPaidAmount(totalPrice);		// always full payment
         
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DATE, 2); 	// setting pickup date as current day + 2 days
-        order.setPickupDate(cal.getTime());
+        
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(new Date());
+//        cal.add(Calendar.DATE, 2); 	// setting pickup date as current day + 2 days
+//        order.setPickupDate(cal.getTime());
         
 //        PaymentRequest paymentRequest = new PaymentRequest(order.getId(), order.getTotalPrice(), orderDto.getPaymentMethod());
         
@@ -141,6 +146,7 @@ public class OrderService {
 	    }
 
 	    order.setStatus(OrderStatus.PICKED_UP);
+	    order.setPickupDate(LocalDateTime.now());
 	    orderRepo.save(order);
 	    
 		log.info("The order with orderId: {} has been PICKED_UP");
@@ -158,9 +164,35 @@ public class OrderService {
 	    return orderRepo.findByStatus(OrderStatus.PICKED_UP);
 	}
 
-	public Optional<Order> getOrderById(Long id) {
-		return orderRepo.findById(id);
+	public Order getOrderById(Long id) throws OrderNotFoundException {
+	    Order order = orderRepo.findById(id)
+	        .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
+
+	    if (order.getStatus() == OrderStatus.FAILED) {
+	        order.setPaidAmount(0);
+	    }
+	    
+	    orderRepo.save(order);
+
+	    return order;
 	}
+	
+	public Map<String, Object> calculateTotalPrice(String batchId, int quantity) throws InsufficientStockException {
+	    DrugDto drug = drugClient.getDrugById(batchId);
+	    if (drug.getQuantity() < quantity) {
+	        throw new InsufficientStockException("Not enough stock for batch " + batchId);
+	    }
+
+	    double totalPrice = drug.getPrice() * quantity;
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("unitPrice", drug.getPrice());
+	    result.put("totalPrice", totalPrice);
+	    result.put("availableStock", drug.getQuantity());
+	    return result;
+	}
+
+
 
 	
 }

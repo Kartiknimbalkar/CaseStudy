@@ -2,6 +2,8 @@ package com.example.demo.dto;
 
 import java.util.Date;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,6 +23,7 @@ public class OrderDto {
     private String batch_id;
 	@Min(value = 1, message = "Quantity should be minimum 1")
     private int quantity;
+	@Enumerated(EnumType.STRING)
     private OrderStatus status;
     private Date orderDate;
     

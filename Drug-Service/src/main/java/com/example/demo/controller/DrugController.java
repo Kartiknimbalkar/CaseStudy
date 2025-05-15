@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 //import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,7 @@ import com.example.demo.dto.RestockRequest;
 import com.example.demo.entity.Drug;
 import com.example.demo.exception.DrugNotFoundException;
 import com.example.demo.exception.InsufficientStockException;
+import com.example.demo.repo.DrugRepository;
 import com.example.demo.service.DrugService;
 
 import jakarta.validation.Valid;
@@ -22,6 +24,9 @@ import jakarta.validation.Valid;
 @Validated
 public class DrugController {
     private final DrugService drugService;
+    
+    @Autowired
+    private DrugRepository drugRepository;
     
     public DrugController(DrugService drugService) {
         this.drugService = drugService;
@@ -61,6 +66,13 @@ public class DrugController {
     public ResponseEntity<String> restockDrugs(@Valid @RequestBody RestockRequest restockRequest) throws DrugNotFoundException {	// Restock for the Supplier service
     	drugService.restockDrugs(restockRequest);
     	return ResponseEntity.ok("Drugs Restored Successfully");
+    }
+    
+    @PutMapping("/failureRestock/{batch_id}/{quantity}")			// Payment Failure Rollback
+    public void failureRestock(@PathVariable String batch_id, @PathVariable int quantity) {
+    	Drug drug = drugRepository.findByBatchId(batch_id).get();
+    	drug.setQuantity(drug.getQuantity() + quantity);
+    	drugRepository.save(drug);
     }
 
     @PutMapping("/{id}/reduce-stock")				// Reduce stock for the Order service

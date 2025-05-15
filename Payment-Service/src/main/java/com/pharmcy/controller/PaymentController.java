@@ -4,10 +4,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-<<<<<<< HEAD
-
-=======
->>>>>>> c9c4f00 (Updated code for the Payment service with failure handling)
 import com.pharmcy.model.PaymentDto;
 import com.pharmcy.service.PaymentService;
 import com.razorpay.RazorpayException;
@@ -32,14 +28,6 @@ public class PaymentController {
         service.confirmPayment(resp);
         return ResponseEntity.ok().build();
     }
-<<<<<<< HEAD
-    
-    @PostMapping("/paymentFailureCallback")
-    public String failureCallback(@RequestBody Map<String, String> response) {
-    	paymentService.handleFailure(response);
-    	return "Payment Failed and items restocked";
-    }
-=======
 
     /** 3) Razorpay failure or user dismiss */
     @PostMapping("/paymentFailureCallback")
@@ -53,5 +41,4 @@ public class PaymentController {
     	return service.updateId(data);
     }
     
->>>>>>> c9c4f00 (Updated code for the Payment service with failure handling)
 }

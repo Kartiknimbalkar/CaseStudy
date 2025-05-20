@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -67,9 +68,22 @@ public class JwtAuthenticationFilter implements WebFilter {
 
                     log.info("Username {} with role {} is authenticated", username, role);
 
-                    // pass this filter and continue with the filter chain
-                    return chain.filter(exchange)
+//                    // pass this filter and continue with the filter chain
+//                    return chain.filter(exchange)
+//                            .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+                    
+                    ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                            .header("X-User-Name", username)
+                            .build();
+
+                    ServerWebExchange mutatedExchange = exchange.mutate()
+                            .request(mutatedRequest)
+                            .build();
+
+                    return chain.filter(mutatedExchange)
                             .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+
+                    
                 } else {
                     log.warn("The JWT token has been expired for the token {}", token);
                 }

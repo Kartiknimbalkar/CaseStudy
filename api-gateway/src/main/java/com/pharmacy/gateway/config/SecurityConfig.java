@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -52,6 +53,17 @@ public class SecurityConfig {
 
                         // supplier-service access control for admin user only
                         .pathMatchers("/supplier-service/suppliers/**").hasRole("ADMIN")
+                        
+                        .pathMatchers("/auth-service/auth/me")    
+                        .authenticated()
+
+                    // ADMIN-only access
+                    .pathMatchers("/auth-service/auth/users/{username}") 
+                        .hasRole("ADMIN")
+
+                    // allow self-update or admin-update (method security enforces owner-or-admin)
+                    .pathMatchers(HttpMethod.PUT, "/auth-service/auth/users/{username}")
+                        .authenticated()
 
                         // All other endpoints are publicly accessible
                         .anyExchange().authenticated()

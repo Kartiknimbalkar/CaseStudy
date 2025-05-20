@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,11 @@ import com.example.demo.dto.SupplierResponseDTO;
 import com.example.demo.dto.SupplierUpdateDto;
 import com.example.demo.exception.SupplierNotFoundException;
 import com.example.demo.model.Supplier;
+import com.example.demo.repo.SupplierRepo;
 import com.example.demo.service.SupplierService;
 
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 
 @RestController
 @RequestMapping("/suppliers")
@@ -33,6 +36,9 @@ public class SupplierController {
 
     @Autowired
     private SupplierService supplierService;
+    
+    @Autowired
+    SupplierRepo supplierRepo;
     
     // restock drugs
     @PostMapping("/restock")
@@ -52,6 +58,11 @@ public class SupplierController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+    
+    @GetMapping("/get/{id}")
+    public Optional<Supplier> getSupplierById(@PathVariable Long id) {
+    	return supplierRepo.findById(id);
     }
     
 

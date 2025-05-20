@@ -74,7 +74,7 @@ class OrderServiceTest {
             });
 
             // Act
-            Order saved = orderService.placeOrder(orderDto);
+            Order saved = orderService.placeOrder(orderDto, "username");
 
             // Assert
             assertAll(
@@ -99,7 +99,7 @@ class OrderServiceTest {
             // Act & Assert
             InsufficientStockException ex = assertThrows(
                 InsufficientStockException.class,
-                () -> orderService.placeOrder(orderDto)
+                () -> orderService.placeOrder(orderDto, "username")
             );
             assertEquals("Not enough stock available", ex.getMessage());
         }
@@ -113,7 +113,7 @@ class OrderServiceTest {
             // Act & Assert
             DrugNotFoundException ex = assertThrows(
                 DrugNotFoundException.class,
-                () -> orderService.placeOrder(orderDto)
+                () -> orderService.placeOrder(orderDto, "username")
             );
             assertEquals("Drug with batchID B123 not found.", ex.getMessage());
         }

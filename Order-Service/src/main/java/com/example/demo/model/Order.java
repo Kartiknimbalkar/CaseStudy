@@ -46,6 +46,7 @@ public class Order {
     private String doctorName;
     private String doctorContact;
     private String doctorEmail;
+    private String username;
 
     @ElementCollection
     private List<String> drugNames;  // List of drug names in the order

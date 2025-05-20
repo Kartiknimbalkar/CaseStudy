@@ -12,5 +12,5 @@ import com.example.demo.model.Order;
 public interface OrderRepo extends JpaRepository<Order, Long>{
 
 	List<Order> findByStatus(OrderStatus status);
-	
+	List<Order> findByUsername(String username);
 }

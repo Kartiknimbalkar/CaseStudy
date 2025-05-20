@@ -11,11 +11,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.AuthRequest;
+import com.example.demo.entity.SignUpDto;
 import com.example.demo.entity.User;
+import com.example.demo.entity.UserDetails;
+import com.example.demo.entity.UserUpdateDto;
 import com.example.demo.exception.UsernameAlreadyTakenException;
 import com.example.demo.repo.UserRepository;
 //import com.example.demo.entity.AuthRequest;
 import com.example.demo.service.AuthService;
+import com.example.demo.service.UserService;
+import com.example.demo.util.JwtUtil;
 
 import jakarta.validation.Valid;
 
@@ -31,6 +36,9 @@ public class AuthController {
     private UserRepository userRepository;
     
     @Autowired
+    private UserService userService;
+    
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")					// accept username and password and provide a jwt token
@@ -40,20 +48,48 @@ public class AuthController {
     }
 
     
-    @PostMapping("/register")  // sign up (register a new user)
-    public ResponseEntity<User> register(@Valid @RequestBody User user) {
-        // Check if a user with the same username already exists
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new UsernameAlreadyTakenException("Username is already taken. Please choose a different username.");
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody SignUpDto request) {
+        if (userRepository.existsById(request.getUsername())) {
+            return ResponseEntity.badRequest().body("Username already exists");
         }
-        
-        // Encode the password before saving the user
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
-        // Save the new user
-        User savedUser = userRepository.save(user);
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setContact(request.getContact());
+
+        userRepository.save(user);
+        return ResponseEntity.ok("User registered successfully");
+    }
+
+    
+ // only authenticated users
+    @GetMapping("/auth/me")
+    public ResponseEntity<UserDetails> getCurrentUser(Authentication auth) {
+        String username = auth.getName();
+        UserDetails dto = userService.findByUsername(username);
+        return ResponseEntity.ok(dto);
+    }
+    
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/auth/users/{username}")
+    public ResponseEntity<UserDetails> getUser(@PathVariable String username) {
+    	UserDetails dto = userService.findByUsername(username);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("#username == authentication.name or hasAuthority('ADMIN')")
+    @PutMapping("/auth/users/{username}")
+    public ResponseEntity<User> updateUser(
+        @PathVariable String username,
+        @RequestBody UserUpdateDto incoming
+    ) {
+    	User updated = userService.updateProfile(username, incoming);
+        return ResponseEntity.ok(updated);
     }
 
     

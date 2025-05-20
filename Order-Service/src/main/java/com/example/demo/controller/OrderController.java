@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +32,7 @@ import com.example.demo.repo.DrugClient;
 import com.example.demo.repo.OrderRepo;
 import com.example.demo.service.OrderService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -47,8 +50,8 @@ public class OrderController {
     private DrugClient drugClient;
 
     @PostMapping("/place")
-    public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderDto orderDto) throws InsufficientStockException, DrugNotFoundException {		// place order
-        Order order = orderService.placeOrder(orderDto);
+    public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderDto orderDto, @RequestHeader("X-User-Name") String username) throws InsufficientStockException, DrugNotFoundException {		// place order
+        Order order = orderService.placeOrder(orderDto, username);
         return ResponseEntity
                 .status(201)
                 .body(order);
@@ -83,6 +86,11 @@ public class OrderController {
     public ResponseEntity<List<Order>> getPickedUpOrders() {		// list all pickedup orders
         return ResponseEntity.ok(orderService.getPickedUpOrders());
     }
+    
+    @GetMapping("/verifiedOrders")
+    public ResponseEntity<List<Order>> getVerifiedOrders() {		// list all verified orders
+        return ResponseEntity.ok(orderService.getVerifiedOrders());
+    }
 
     @GetMapping("/list")
     public List<Order> getAllOrders() {					// list all orders
@@ -93,13 +101,14 @@ public class OrderController {
     public Order getOrderById(@PathVariable Long orderId) throws OrderNotFoundException {
     	return orderService.getOrderById(orderId);
     }
-
-    @PutMapping("/restock/{id}")
-    public void failureHandle(@PathVariable Long id) {
-    	Order order = orderRepo.findById(id).get();
-    	order.setStatus(OrderStatus.FAILED);
-    	orderRepo.save(order);
-    	drugClient.failureRestock(order.getBatch_id(), order.getQuantity());
+    
+    @GetMapping("/getUserOrders")
+    public ResponseEntity<List<Order>> getOrders(@RequestHeader("X-User-Name") String username) {
+        List<Order> orders = orderService.getOrdersByUsername(username);
+        return ResponseEntity.ok(orders);
     }
+
+
+
     
 }

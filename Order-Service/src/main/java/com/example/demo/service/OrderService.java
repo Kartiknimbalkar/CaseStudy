@@ -47,7 +47,7 @@ public class OrderService {
 //	@Autowired
 //	private PaymentClient paymentClient;
 	
-	public Order placeOrder(OrderDto orderDto) throws InsufficientStockException, DrugNotFoundException {
+	public Order placeOrder(OrderDto orderDto, String username) throws InsufficientStockException, DrugNotFoundException {
 		
 		log.info("In the place order method");
 		
@@ -84,6 +84,7 @@ public class OrderService {
         double totalPrice = drug.getPrice() * orderDto.getQuantity();
         order.setTotalPrice(totalPrice);
         order.setPaidAmount(totalPrice);		// always full payment
+        order.setUsername(username);
         
         
 //        Calendar cal = Calendar.getInstance();
@@ -141,7 +142,7 @@ public class OrderService {
 	            .orElseThrow(() -> new OrderNotFoundException("Order not found for orderId: " + orderId));
 
 	    if (order.getStatus() != OrderStatus.VERIFIED) {
-			log.info("Order with orderId: {} must be VEIFIED before pickup", orderId);
+			log.info("Order with orderId: {} must be VERIFIED before pickup", orderId);
 	        throw new IllegalStateException("Order with orderId " + orderId + " must be VERIFIED before pickup.");
 	    }
 
@@ -191,7 +192,17 @@ public class OrderService {
 	    result.put("availableStock", drug.getQuantity());
 	    return result;
 	}
+	
+	
+	public List<Order> getOrdersByUsername(String username) {
+	    List<Order> orders = orderRepo.findByUsername(username);
+	    return orders;
+	}
 
+	public List<Order> getVerifiedOrders() {
+		log.info("Listing VERIFIED Orders");
+		return orderRepo.findByStatus(OrderStatus.VERIFIED);
+	}
 
 
 	
